@@ -10,7 +10,7 @@ export async function sendVerificationEmail(
 ): Promise<ApiResponse> {
     //configure nodemailer
     const transporter: Transporter = nodemailer.createTransport({
-        service: email,
+        service: 'gmail',
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS,
@@ -18,7 +18,7 @@ export async function sendVerificationEmail(
     })
 
     const htmlContent = await render(
-        VerificationEmail({fullName, email, otp: verifyCode })
+        VerificationEmail({fullName, otp: verifyCode })
     )
 
     //Email options
@@ -26,7 +26,8 @@ export async function sendVerificationEmail(
         from: `"Mahaveer Trading Company" <${process.env.EMAIL_USER}>`,
         to: email,
         subject: "Verification Code | Mahaveer Trading Company",
-        html: htmlContent
+        html: htmlContent,
+        text: `Hi ${fullName}, your verification code is ${verifyCode}.`,
     }
 
     //send the email
