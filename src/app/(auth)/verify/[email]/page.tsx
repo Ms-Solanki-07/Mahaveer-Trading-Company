@@ -50,7 +50,7 @@ export default function InputOTPForm() {
       })
 
       toast.success("Verification successful!", {
-        duration: 1000, // 2 seconds
+        duration: 1000, 
       });
 
       // Wait for toast to finish, then navigate

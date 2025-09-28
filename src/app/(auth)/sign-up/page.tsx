@@ -39,8 +39,6 @@ export default function Page({
     try {
       const res = await axios.post<ApiResponse>('/api/sign-up', data)
 
-        console.log(res)
-
         toast.success(res.data.message, {
           duration: 1000, 
         });
@@ -100,7 +98,7 @@ export default function Page({
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input placeholder="email" {...field} />
+                            <Input placeholder="m@example.com" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

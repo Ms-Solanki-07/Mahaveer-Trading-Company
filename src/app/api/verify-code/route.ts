@@ -1,7 +1,7 @@
 import { connectDB } from "@/lib/connectDB";
 import UserModel from "@/models/User.model";
 import { verifySchema } from "@/schemas/verifySchema";
-import { success, z } from "zod";
+import { z } from "zod";
 
 const verifyCodeQuerySchema = z.object({
     verifyCode: verifySchema
@@ -40,13 +40,6 @@ export async function POST(request: Request) {
             }, { status: 400 })
         }
 
-        if(user.isVerified){
-            return Response.json({
-                success: false,
-                message: "Account already verified"
-            }, { status: 400 })
-        }
-
         const isCodeValid = user.verifyCode === code
         const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date()
 
@@ -61,7 +54,7 @@ export async function POST(request: Request) {
         } else if (!isCodeNotExpired) {
             return Response.json({
                 success: false,
-                message: "Verification code has expired, please signup again to get a new code"
+                message: "Verification code has expired, Please resend the verification code"
             }, { status: 400 })
         } else {
             return Response.json({

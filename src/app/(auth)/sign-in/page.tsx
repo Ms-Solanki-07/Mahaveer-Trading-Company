@@ -103,7 +103,7 @@ export default function Page({
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input placeholder="email" {...field} />
+                            <Input placeholder="m@example.com" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -116,7 +116,7 @@ export default function Page({
                         <FormItem>
                           <div className="flex items-center">
                             <FormLabel>Password</FormLabel>
-                            <a href="#" className="ml-auto text-sm underline-offset-2 hover:underline">Forgot password?</a>
+                            <a href="/forgot-password" className="ml-auto text-sm underline-offset-2 hover:underline">Forgot password?</a>
                           </div>
                           <FormControl>
                             <Input type="password" placeholder="password" {...field} />
