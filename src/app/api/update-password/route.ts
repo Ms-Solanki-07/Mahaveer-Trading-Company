@@ -12,9 +12,7 @@ export async function POST(request: Request) {
         const expiryDate = new Date() 
         expiryDate.setMinutes(expiryDate.getMinutes() + 5)
 
-        const decodedEmail = decodeURIComponent(email)
-
-        console.log("deo:", decodedEmail)
+        const decodedEmail = decodeURIComponent(email) 
 
         const user = await UserModel.findOne({ email: decodedEmail })
 

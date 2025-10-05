@@ -58,7 +58,7 @@ export default function Page({
         // Wait for toast to finish, then navigate
         setTimeout(() => {
           if (result?.url) {
-            router.push('/dashboard');
+            router.push('/');
           }
         }, 1000);
       }

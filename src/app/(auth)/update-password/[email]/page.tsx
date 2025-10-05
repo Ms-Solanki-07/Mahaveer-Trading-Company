@@ -25,8 +25,7 @@ export default function Page({
     ...props
 }: React.ComponentProps<"div">) {
 
-    const [isSubmitting, setIsSubmitting] = useState(false) 
-    const router = useRouter()
+    const [isSubmitting, setIsSubmitting] = useState(false)  
       const params = useParams<{ email: string }>()
       const userEmail = params.email
 

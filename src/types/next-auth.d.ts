@@ -6,7 +6,8 @@ declare module 'next-auth' {
         _id: string,
         fullName?: string,
         email?: string,
-        isVerified?: boolean
+        isVerified?: boolean,
+        role?: string
     }
 
     interface Session {
@@ -14,7 +15,8 @@ declare module 'next-auth' {
             _id: string,
             fullName?: string,
             email?: string,
-            isVerified?: boolean
+            isVerified?: boolean,
+            role?: string
         } & DefaultSession['user']
     }
 }
@@ -23,6 +25,7 @@ declare module 'next-auth/jwt' {
     interface JWT {
         _id: string,
         email?: string,
-        isVerified?: boolean
+        isVerified?: boolean,
+        role?: string
     }
 }

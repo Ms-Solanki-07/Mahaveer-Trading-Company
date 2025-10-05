@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import mongoose, { Schema, Document, ObjectId } from 'mongoose'
 
 export interface User extends Document {
     fullName: string,
@@ -6,10 +6,7 @@ export interface User extends Document {
     password: string,
     role: string,
     mobileNo: string,
-    GSTIN: string,
-    businessName: string,
-    address: string,
-    city: string,
+    shopId: ObjectId
     verifyCode: string,
     verifyCodeExpiry: Date,
     isVerified: boolean
@@ -38,18 +35,9 @@ const userSchema: Schema<User> = new Schema({
     },
     mobileNo: {
         type: String,
-    },
-    GSTIN: {
-        type: String,
-    },
-    businessName: {
-        type: String,
-    },
-    address: {
-        type: String,
-    },
-    city: {
-        type: String,
+    }, 
+    shopId: {
+        type: mongoose.Types.ObjectId
     },
     verifyCode: {
         type: String,
