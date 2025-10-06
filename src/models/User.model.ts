@@ -5,7 +5,7 @@ export interface User extends Document {
     email: string,
     password: string,
     role: string,
-    mobileNo: string,
+    phone: string,
     shopId: ObjectId
     verifyCode: string,
     verifyCodeExpiry: Date,
@@ -33,7 +33,7 @@ const userSchema: Schema<User> = new Schema({
         type: String,
         default: "customer"
     },
-    mobileNo: {
+    phone: {
         type: String,
     }, 
     shopId: {

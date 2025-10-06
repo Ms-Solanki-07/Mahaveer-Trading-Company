@@ -5,19 +5,28 @@ export interface Shop extends Document {
     GSTIN: string,
     address: string,
     city: string,
+    pinCode: string,
+    state: string
 }
 
 const shopSchema:Schema<Shop> = new Schema({
     shopName: {
-        type: String
+        type: String,
+        required: true
     },
     GSTIN: {
-        type: String
+        type: String, 
     },
     address: {
         type: String
     },
     city: {
+        type: String
+    }, 
+    pinCode : {
+        type: String
+    },
+    state : {
         type: String
     }
 }, {timestamps: true})
