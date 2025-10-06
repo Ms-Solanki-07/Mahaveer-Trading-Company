@@ -64,7 +64,7 @@ const PublicNavbar = ({
     title: "Mahaveer Trading Company",
   },
   menu = [
-    { title: "Home", url: "#" },
+    { title: "Home", url: "../" },
     {
       title: "Products",
       url: "",
@@ -127,8 +127,8 @@ const PublicNavbar = ({
       ],
     },
     {
-      title: "Pricing",
-      url: "#",
+      title: "Profile",
+      url: "/profile",
     },
     {
       title: "Blog",

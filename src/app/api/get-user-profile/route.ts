@@ -39,9 +39,23 @@ export async function POST(request:Request) {
                     from: "shops",
                     localField: "shopId",
                     foreignField: "_id",
-                    as: "shopDetails"
+                    as: "shopDetails",
+                    pipeline: [
+                        {
+                            $project: {
+                                __v: 0,
+                                createdAt: 0,
+                                updatedAt: 0
+                            }
+                        }
+                    ]
                 }
             },
+            {
+                $addFields: {
+                    shopDetials: { $first: "$shopDetails"  }
+                }
+            }, 
             { 
                 $project: {
                     fullName: 1,

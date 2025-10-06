@@ -63,7 +63,7 @@ const AdminNavbar = ({
     title: "Mahaveer Trading Company",
   },
   menu = [
-    { title: "Home", url: "" },
+    { title: "Home", url: "../" },
     {
       title: "Products",
       url: "#",
@@ -126,8 +126,8 @@ const AdminNavbar = ({
       ],
     },
     {
-      title: "Pricing",
-      url: "#",
+      title: "Profile",
+      url: "/profile",
     },
     {
       title: "Blog",

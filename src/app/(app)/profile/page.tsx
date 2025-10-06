@@ -19,15 +19,46 @@ import { toast } from "sonner";
 
 export default function Profile() {
     const [isUpdating, setIsUpdating] = useState(false);
+    const [fullName, setFullName] = useState('')
+    const [email, setEmail] = useState('')
+    const [phone, setPhone] = useState('')
+    const [role, setRole] = useState('')
+    const [shopName, setShopName] = useState('')
+    const [GSTIN, setGSTIN] = useState('')
+    const [address, setAddress] = useState('')
+    const [city, setCity] = useState('')
+    const [pinCode, setPinCode] = useState('')
+    const [state, setState] = useState('')
 
     useEffect(() => {
         const user = async () => {
-            const res = await axios.post('/api/get-user-profile')
+            try {
+                const res = await axios.post('/api/get-user-profile')
 
-            console.log("User Profile Data:", res.data);
+                res.data.user.fullName && setFullName(res.data.user.fullName);
+                res.data.user.email && setEmail(res.data.user.email);
+                res.data.user.phone && setPhone(res.data.user.phone);
+                res.data.user.role && setRole(res.data.user.role);
+                res.data.user.shopDetails[0]?.shopName && setShopName(res.data.user.shopDetails[0].shopName);
+                res.data.user.shopDetails[0]?.GSTIN && setGSTIN(res.data.user.shopDetails[0].GSTIN);
+                res.data.user.shopDetails[0]?.address && setAddress(res.data.user.shopDetails[0].address);
+                res.data.user.shopDetails[0]?.city && setCity(res.data.user.shopDetails[0].city);
+                res.data.user.shopDetails[0]?.pinCode && setPinCode(res.data.user.shopDetails[0].pinCode);
+                res.data.user.shopDetails[0]?.state && setState(res.data.user.shopDetails[0].state);
+
+                console.log("User Profile Data:", fullName);
+
+                toast.success(res.data.message);
+
+            } catch (error) {
+                const axiosError = error as AxiosError<ApiResponse>
+                const errorMessage = axiosError.response?.data.message
+                toast.error(errorMessage ? errorMessage : 'Server Error: Something went wrong')
+            }
         }
         user();
     }, [])
+
 
     //zod implementation
     const form = useForm<z.infer<typeof updateProfileSchema>>({
@@ -44,7 +75,22 @@ export default function Profile() {
             pinCode: "",
             state: ""
         }
-    })
+    });
+
+    useEffect(() => {
+        form.reset({
+            fullName,
+            email,
+            role,
+            phone,
+            shopName,
+            GSTIN,
+            address,
+            city,
+            pinCode,
+            state
+        });
+    }, [fullName, email, role, phone, shopName, GSTIN, address, city, pinCode, state, form]);
 
     const onSubmit = async (data: z.infer<typeof updateProfileSchema>) => {
         setIsUpdating(true);
@@ -54,6 +100,7 @@ export default function Profile() {
                     "Content-Type": "multipart/form-data",
                 },
             })
+            window.location.reload();
             toast.success(res.data.message);
         } catch (error) {
             const axiosError = error as AxiosError<ApiResponse>
@@ -79,21 +126,21 @@ export default function Profile() {
                                 </div>
                                 <div className="flex-1 space-y-2">
                                     <div className="flex flex-col gap-2 md:flex-row md:items-center">
-                                        <h1 className="text-2xl font-bold">John Doe</h1>
+                                        <h1 className="text-2xl font-bold">{fullName}</h1>
                                     </div>
-                                    <p className="text-muted-foreground">Shop Name</p>
+                                    <p className="text-muted-foreground">{shopName}</p>
                                     <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
                                         <div className="flex items-center gap-1">
                                             <Mail className="size-4" />
-                                            john.doe@example.com
+                                            {email}
                                         </div>
                                         <div className="flex items-center gap-1">
                                             <Phone className="size-4" />
-                                            Mobile Number
+                                            {phone}
                                         </div>
                                         <div className="flex items-center gap-1">
                                             <MapPin className="size-4" />
-                                            San Francisco, CA
+                                            {city}, {state} - {pinCode}
                                         </div>
                                     </div>
                                 </div>
@@ -122,7 +169,7 @@ export default function Profile() {
                                             control={form.control}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Full Name</FormLabel>
+                                                    <FormLabel>Full Name*</FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="John" {...field} />
                                                     </FormControl>
@@ -148,7 +195,7 @@ export default function Profile() {
                                             control={form.control}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Phone No.</FormLabel>
+                                                    <FormLabel>Phone No.*</FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="9243*****3" {...field} />
                                                     </FormControl>
@@ -174,7 +221,7 @@ export default function Profile() {
                                             control={form.control}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Shop Name</FormLabel>
+                                                    <FormLabel>Shop Name*</FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Acme Inc." {...field} />
                                                     </FormControl>
@@ -187,7 +234,7 @@ export default function Profile() {
                                             control={form.control}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>GSTIN</FormLabel>
+                                                    <FormLabel>GSTIN*</FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Enter GSTIN" {...field} />
                                                     </FormControl>
@@ -248,6 +295,7 @@ export default function Profile() {
                                             )}
                                         />
                                     </div>
+                                    <p className="text-sm text-cyan-600">* Requried filed</p>
                                 </CardContent>
                             </Card>
                         </TabsContent>
@@ -266,11 +314,9 @@ export default function Profile() {
                                                 <Label className="text-base">Password</Label>
                                                 <p className="text-muted-foreground text-sm">Update password for improve security</p>
                                             </div>
-                                            <a href="/forgot-password">
-                                                <Button variant="outline">
-                                                    <Key className="mr-2 h-4 w-4" />
-                                                    Change Password
-                                                </Button>
+                                            <a href="/forgot-password" className="flex flex-row items-center border-1 border-gray-400 rounded-sm px-3 py-1 hover:bg-gray-800">
+                                                <Key className="mr-2 h-4 w-4" />
+                                                Change Password
                                             </a>
                                         </div>
 
