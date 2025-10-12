@@ -1,116 +1,39 @@
 'use client'
 
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button" 
 import { Separator } from "@/components/ui/separator"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import AutoPlay from 'embla-carousel-autoplay'
-import { motion } from "framer-motion"
-import { ShoppingCart } from "lucide-react"
+import { motion } from "framer-motion" 
+import { useEffect, useState } from "react"
+import axios, { AxiosError } from "axios"
+import { ApiResponse } from "@/types/ApiResponse"
+import { toast } from "sonner"
+import { Product, ProductCard } from "@/components/ProductCard"
 
-type Product = {
-  id: number;
-  name: string;
-  description: string;
-  image: string;
-  price: string;
-  discount: string;
-};
-
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Stainless Door Hinge",
-    description: "Durable and rust-proof hinge for modern doors.",
-    image: "https://placehold.co/400",
-    price: "₹150",
-    discount: "10% Off"
-  },
-  {
-    id: 2,
-    name: "Brass Cabinet Knob",
-    description: "Elegant brass knob with premium finish.",
-    image: "https://placehold.co/400",
-    price: "₹80",
-    discount: "8% Off"
-  },
-  {
-    id: 3,
-    name: "Aluminum Window Handle",
-    description: "Lightweight and sturdy window handle.",
-    image: "https://placehold.co/400",
-    price: "₹95",
-    discount: "5% Off"
-  },
-  {
-    id: 4,
-    name: "Heavy-Duty Drawer Slide",
-    description: "Smooth and strong sliding for drawers.",
-    image: "https://placehold.co/400",
-    price: "₹240",
-    discount: "12% Off"
-  },
-  {
-    id: 5,
-    name: "Steel Door Stopper",
-    description: "Protects doors and walls with stability.",
-    image: "https://placehold.co/400",
-    price: "₹40",
-    discount: "15% Off"
-  },
-  {
-    id: 1,
-    name: "Stainless Door Hinge",
-    description: "Durable and rust-proof hinge for modern doors.",
-    image: "https://placehold.co/400",
-    price: "₹150",
-    discount: "10% Off"
-  },
-  {
-    id: 2,
-    name: "Brass Cabinet Knob",
-    description: "Elegant brass knob with premium finish.",
-    image: "https://placehold.co/400",
-    price: "₹80",
-    discount: "8% Off"
-  },
-  {
-    id: 3,
-    name: "Aluminum Window Handle",
-    description: "Lightweight and sturdy window handle.",
-    image: "https://placehold.co/400",
-    price: "₹95",
-    discount: "5% Off"
-  },
-  {
-    id: 4,
-    name: "Heavy-Duty Drawer Slide",
-    description: "Smooth and strong sliding for drawers.",
-    image: "https://placehold.co/400",
-    price: "₹240",
-    discount: "12% Off"
-  },
-  {
-    id: 5,
-    name: "Steel Door Stopper",
-    description: "Protects doors and walls with stability.",
-    image: "https://placehold.co/400",
-    price: "₹40",
-    discount: "15% Off"
-  }
-]
 
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get('/api/get-inStock-product')
+        setProducts(res.data.data)
+      } catch (error) {
+        const axiosError = error as AxiosError<ApiResponse>
+        const errorMessage = axiosError.response?.data.message
+        toast.error(errorMessage ? errorMessage : 'Server Error: Something went wrong')
+      }
+    }
+    fetchProducts()
+  }, [])
+
+
   return (
     <div className="font-sans min-h-screen px-4 md:px-8">
-      
+
       {/* HERO SECTION */}
       <section className="max-w-full mx-aut pt-6">
         <Carousel plugins={[AutoPlay({ delay: 4000 })]} className="w-full">
@@ -145,12 +68,12 @@ export default function Home() {
                 </Card>
               </CarouselItem>
             ))}
-          </CarouselContent> 
+          </CarouselContent>
         </Carousel>
       </section>
 
       <main className="py-8 md:py-16">
-      {/* FEATURED PRODUCTS */}
+        {/* FEATURED PRODUCTS */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -162,44 +85,8 @@ export default function Home() {
         </motion.div>
 
         <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
-          {products.map((product, index) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.4 }}
-              whileHover={{ scale: 1.03 }}
-              className="flex"
-            >
-              <Card className="rounded-xl hover:shadow-lg hover:shadow-neutral-800/30 transition-all duration-300 w-full h-full py-0 pb-4 gap-2">
-                <CardHeader className="p-0 relative">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="h-32 md:h-44 w-full object-cover rounded-t-xl"
-                  />
-                  <Badge className="absolute top-3 left-3 border text-xs">
-                    {product.discount}
-                  </Badge>
-                </CardHeader>
-
-                <CardContent className="px-2 md:px-4 flex-grow">
-                  <h3 className="text-base font-semibold mb-1  ">{product.name}</h3>
-                  <p className="text-xs line-clamp-2">{product.description}</p>
-                </CardContent>
-
-                <CardFooter className="px-2 md:px-4 flex items-center justify-between">
-                  <span className="text-md md:text-lg font-semibold  ">{product.price}</span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="hover:bg-neutral-800 hover:text-white"
-                  >
-                    <ShoppingCart className="w-2 h-2 md:w-4 md:h-4 mr-1" /> Buy
-                  </Button>
-                </CardFooter>
-              </Card>
-            </motion.div>
+          {products.map((product, index) => (  
+            <ProductCard key={product.id} product={product} index={index} />
           ))}
         </div>
 
@@ -217,43 +104,7 @@ export default function Home() {
 
         <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
           {products.map((product, index) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.4 }}
-              whileHover={{ scale: 1.03 }}
-              className="flex"
-            >
-              <Card className="rounded-xl hover:shadow-lg hover:shadow-neutral-800/30 transition-all duration-300 w-full h-full py-0 pb-4 gap-2">
-                <CardHeader className="p-0 relative">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="h-32 md:h-44 w-full object-cover rounded-t-xl"
-                  />
-                  <Badge className="absolute top-3 left-3 border text-xs">
-                    {product.discount}
-                  </Badge>
-                </CardHeader>
-
-                <CardContent className="px-2 md:px-4 flex-grow">
-                  <h3 className="text-base font-semibold mb-1  ">{product.name}</h3>
-                  <p className="text-xs line-clamp-2">{product.description}</p>
-                </CardContent>
-
-                <CardFooter className="px-2 md:px-4 flex items-center justify-between">
-                  <span className="text-md md:text-lg font-semibold  ">{product.price}</span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="hover:bg-neutral-800 hover:text-white"
-                  >
-                    <ShoppingCart className="w-2 h-2 md:w-4 md:h-4 mr-1" /> Buy
-                  </Button>
-                </CardFooter>
-              </Card>
-            </motion.div>
+            <ProductCard key={product.id} product={product} index={index}/>
           ))}
         </div>
       </main>

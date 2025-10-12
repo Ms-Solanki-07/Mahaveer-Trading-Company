@@ -71,8 +71,7 @@ export default function AddProduct() {
     setIsSubmitting(true)
     try {
       // Add image property to data
-      const formData = { ...data, image: files[0] }
-      console.log(formData)
+      const formData = { ...data, image: files[0] } 
       const res = await axios.post<ApiResponse>('/api/add-product', formData, {
         headers: {
           "Content-Type": "multipart/form-data",

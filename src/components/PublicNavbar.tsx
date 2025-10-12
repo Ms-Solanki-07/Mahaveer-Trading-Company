@@ -1,6 +1,6 @@
 "use client"
 
-import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
+import { Book, Menu, Sunset, Trees, Zap, ShoppingCart } from "lucide-react";
 import { signOut, useSession } from 'next-auth/react'
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -70,10 +70,10 @@ const PublicNavbar = ({
       url: "",
       items: [
         {
-          title: "Blog",
+          title: "All Products",
           description: "The latest industry news, updates, and info",
           icon: <Book className="size-5 shrink-0" />,
-          url: "#",
+          url: "/all-products",
         },
         {
           title: "Company",
@@ -171,6 +171,9 @@ const PublicNavbar = ({
             </div>
           </div>
           <div className="flex gap-2">
+            
+            <a href="/cart"><ShoppingCart/></a>
+
             <ThemeToggle />
             {
               session ? (

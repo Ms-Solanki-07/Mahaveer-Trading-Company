@@ -46,8 +46,6 @@ export default function Profile() {
                 res.data.user.shopDetails[0]?.pinCode && setPinCode(res.data.user.shopDetails[0].pinCode);
                 res.data.user.shopDetails[0]?.state && setState(res.data.user.shopDetails[0].state);
 
-                console.log("User Profile Data:", fullName);
-
                 toast.success(res.data.message);
 
             } catch (error) {
