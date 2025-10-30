@@ -95,7 +95,7 @@ export default function AddProduct() {
     setFiles([])
   }
 
-  return (
+  return ( <>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="">
         <div className="p-6 space-y-6">
@@ -131,7 +131,7 @@ export default function AddProduct() {
                     control={form.control}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name</FormLabel>
+                        <FormLabel>Name*</FormLabel>
                         <FormControl>
                           <Input placeholder="Enter product name" {...field} />
                         </FormControl>
@@ -158,7 +158,7 @@ export default function AddProduct() {
               {/* Product Images */}
               <Card>
                 <CardHeader className="flex justify-between items-center">
-                  <CardTitle>Product Images</CardTitle>
+                  <CardTitle>Product Images*</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div
@@ -219,7 +219,7 @@ export default function AddProduct() {
                     control={form.control}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>MRP</FormLabel>
+                        <FormLabel>MRP*</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="0.00"
@@ -289,7 +289,7 @@ export default function AddProduct() {
                     control={form.control}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Category</FormLabel>
+                        <FormLabel>Category*</FormLabel>
                         <FormControl>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <SelectTrigger>
@@ -313,7 +313,7 @@ export default function AddProduct() {
                     control={form.control}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Unit</FormLabel>
+                        <FormLabel>Unit*</FormLabel>
                         <FormControl>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <SelectTrigger>
@@ -337,5 +337,6 @@ export default function AddProduct() {
         </div>
       </form>
     </Form >
-  )
+    <p className="text-sm text-muted-foreground px-8">* Requried filed</p>
+  </>)
 }

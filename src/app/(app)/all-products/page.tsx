@@ -33,7 +33,7 @@ export default function AllProducts() {
 
             {/* HERO SECTION */}
             <section className="max-w-full mx-aut pt-6">
-                <Carousel plugins={[AutoPlay({ delay: 4000 })]} className="w-full">
+                <Carousel plugins={[AutoPlay({ delay: 3000 })]} className="w-full">
                     <CarouselContent>
                         {[1, 2, 3].map((num) => (
                             <CarouselItem key={num}>

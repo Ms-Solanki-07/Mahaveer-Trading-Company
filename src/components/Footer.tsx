@@ -79,7 +79,7 @@ const Footer = ({
   ],
 }: Footer2Props) => {
   return (
-    <section className="py-32 px-22">
+    <section className="pb-10 px-8 md:py-32 md:px-22">
       <Separator className="mb-10"/>
       <div className="">
         <footer>

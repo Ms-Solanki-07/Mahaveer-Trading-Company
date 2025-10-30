@@ -1,5 +1,4 @@
 "use client"
-
 import { Book, Menu, Sunset, Trees, Zap, ShoppingCart } from "lucide-react";
 import { signOut, useSession } from 'next-auth/react'
 import { ThemeToggle } from "./ThemeToggle";
@@ -27,6 +26,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { User } from "next-auth";
+import CartIcon from "./CartIcon";
 
 interface MenuItem {
   title: string;
@@ -36,7 +36,7 @@ interface MenuItem {
   items?: MenuItem[];
 }
 
-interface Navbar1Props {
+interface PublicNavbarProps {
   logo?: {
     url: string;
     src: string;
@@ -58,7 +58,7 @@ interface Navbar1Props {
 
 const PublicNavbar = ({
   logo = {
-    url: "",
+    url: "/",
     src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
     alt: "MTC-logo",
     title: "Mahaveer Trading Company",
@@ -128,7 +128,34 @@ const PublicNavbar = ({
     },
     {
       title: "Profile",
-      url: "/profile",
+      url: "",
+      items: [
+        {
+          title: "My Profile",
+          description: "The latest industry news, updates, and info",
+          icon: <Book className="size-5 shrink-0" />,
+          url: "/profile",
+        },
+        {
+          title: "Login",
+          description: "Our mission is to innovate and empower the world",
+          icon: <Trees className="size-5 shrink-0" />,
+          url: "/sign-in",
+        },
+        {
+          title: "Sign up",
+          description: "Browse job listing and discover our workspace",
+          icon: <Sunset className="size-5 shrink-0" />,
+          url: "/sign-up",
+        },
+        {
+          title: "Support",
+          description:
+            "Get in touch with our support team or visit our community forums",
+          icon: <Zap className="size-5 shrink-0" />,
+          url: "#",
+        },
+      ],
     },
     {
       title: "Blog",
@@ -139,7 +166,7 @@ const PublicNavbar = ({
     login: { title: "Login", url: "/sign-in" },
     signup: { title: "Sign up", url: "/sign-up" },
   },
-}: Navbar1Props) => {
+}: PublicNavbarProps) => {
 
   const { data: session } = useSession()
 
@@ -170,29 +197,29 @@ const PublicNavbar = ({
               </NavigationMenu>
             </div>
           </div>
-          <div className="flex gap-2">
-            
-            <a href="/cart"><ShoppingCart/></a>
-
-            <ThemeToggle />
-            {
-              session ? (
-                <>
-                  <Button onClick={() => signOut()} asChild variant="outline" size="sm" className="h-9">
-                    <span>Logout</span>
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button asChild variant="outline" size="sm" className="h-9">
-                    <a href={auth.login.url}>{auth.login.title}</a>
-                  </Button>
-                  <Button asChild size="sm" className="h-8.5">
-                    <a href={auth.signup.url}>{auth.signup.title}</a>
-                  </Button>
-                </>
-              )
-            }
+          <div className="flex gap-6">
+            {user && <CartIcon/>}
+            <div className="flex gap-2">
+              <ThemeToggle />
+              {
+                session ? (
+                  <>
+                    <Button onClick={() => signOut()} asChild variant="outline" size="sm" className="h-9">
+                      <span>Logout</span>
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button asChild variant="outline" size="sm" className="h-9">
+                      <a href={auth.login.url}>{auth.login.title}</a>
+                    </Button>
+                    <Button asChild size="sm" className="h-8.5">
+                      <a href={auth.signup.url}>{auth.signup.title}</a>
+                    </Button>
+                  </>
+                )
+              }
+            </div>
           </div>
         </nav>
 
@@ -216,13 +243,7 @@ const PublicNavbar = ({
               <SheetContent className="overflow-y-auto">
                 <SheetHeader>
                   <SheetTitle>
-                    <a href={logo.url} className="flex items-center gap-2">
-                      <img
-                        src={logo.src}
-                        className="max-h-8 dark:invert"
-                        alt={logo.alt}
-                      />
-                    </a>
+                    <CartIcon/>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-6 p-4">
@@ -234,8 +255,8 @@ const PublicNavbar = ({
                     {menu.map((item) => renderMobileMenuItem(item))}
                   </Accordion>
 
-                  <div className="flex flex-col gap-3">
-                    <ThemeToggle />
+                  <div className="flex flex-col gap-3"> 
+                    <ThemeToggle /> 
                     {
                       session ? (
                         <>

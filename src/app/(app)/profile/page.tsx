@@ -293,7 +293,7 @@ export default function Profile() {
                                             )}
                                         />
                                     </div>
-                                    <p className="text-sm text-cyan-600">* Requried filed</p>
+                                    <p className="text-sm text-muted-foreground">* Requried filed</p>
                                 </CardContent>
                             </Card>
                         </TabsContent>

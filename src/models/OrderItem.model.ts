@@ -1,5 +1,4 @@
-import mongoose, { Document, ObjectId, Schema } from "mongoose";
-import { number } from "zod";
+import mongoose, { Document, Model, Schema } from "mongoose"; 
 
 export interface OrderItem extends Document {
     orderId: {type: mongoose.Schema.Types.ObjectId, ref: "Order"},
@@ -27,6 +26,10 @@ const orderItemSchema: Schema<OrderItem> = new Schema({
 
 }, { timestamps: true })
 
-const OrderItemModel = (mongoose.models.OrderItem as mongoose.Model<OrderItem>) || mongoose.model<OrderItem>("orderItemSchema", orderItemSchema)
+const OrderItemModel = (mongoose.models.OrderItem as mongoose.Model<OrderItem>) || mongoose.model<OrderItem>("OrderItem", orderItemSchema)
+
+// const OrderItemModel: Model<OrderItem> =
+//   mongoose.models.OrderItem || mongoose.model<OrderItem>("OrderItem", orderItemSchema);
+
 
 export default OrderItemModel;

@@ -57,13 +57,13 @@ interface Navbar1Props {
 
 const AdminNavbar = ({
   logo = {
-    url: "",
+    url: "/admin",
     src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
     alt: "logo",
     title: "Mahaveer Trading Company",
   },
   menu = [
-    { title: "Home", url: "../" },
+    { title: "Home", url: "../admin" },
     {
       title: "Products",
       url: "#",
@@ -141,7 +141,6 @@ const AdminNavbar = ({
 }: Navbar1Props) => {
 
   const { data: session } = useSession()
-
   const user: User = session?.user as User
 
   return (

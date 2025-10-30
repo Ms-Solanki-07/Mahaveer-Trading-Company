@@ -1,90 +1,141 @@
 'use client'
- 
-import { removeFromCart, updateQuantity, clearCart } from "@/lib/store/features/cartSlice";
+
+import { removeFromCart, updateQuantity, clearCart, CartItem } from "@/lib/store/features/cartSlice";
 import { Button } from "@/components/ui/button";
+import { useAppSelector, useAppDispatch } from '@/lib/store/hooks';
+import { Card } from "@/components/ui/card";
+import { Minus, Plus } from "lucide-react";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Input } from "@/components/ui/input";
+import axios, { AxiosError } from "axios";
+import { useSession } from "next-auth/react";
+import { User } from "next-auth";
+import { ApiResponse } from "@/types/ApiResponse";
+import { toast } from "sonner";
 
-import { useAppSelector, useAppDispatch } from '@/lib/store/hooks'; 
-
-export default function CartPage() { 
-
+export default function CartPage() {
   const cartItems = useAppSelector(state => state.cart.cart.items);
   const dispatch = useAppDispatch();
-
-  console.log(cartItems);
+  const { data: session } = useSession()
+  const user: User = session?.user as User
 
   const totalAmount = cartItems.reduce(
     (sum, item) => sum + item.discountPrice * item.quantity,
     0
-  ); 
+  );
 
-  const handleCheckout = async () => {
-    // const res = await fetch("/api/orders", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     userId: "USER_ID_HERE",
-    //     items: cartItems.map(({ id, quantity, discountPrice }) => ({
-    //       id,
-    //       quantity,
-    //       discountPrice,
-    //     })),
-    //   }),
-    // });
+  const handleCheckout = async (userId: string, cartItems: CartItem[], totalAmount: number) => { 
+    try {
+      const payload = {
+        userId, 
+        orderItems: cartItems,
+        totalAmount,
+      };
 
-    // const data = await res.json();
-    // if (data.success) {
-    //   dispatch(clearCart());
-    //   alert("Order placed successfully!");
-    // }
+      const res = await axios.post("/api/create-order", payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      toast.success("Order placed successfully");
+      console.log("✅ Order placed successfully:", res);
+      
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>
+      const errorMessage = axiosError.response?.data.message
+      toast.error(errorMessage ? errorMessage : 'Server Error: Something went wrong while placing the order.')
+    } 
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Your Cart</h1> 
+    <div className="max-w-6xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
 
       {cartItems.length === 0 ? (
         <p>Your cart is empty.</p>
       ) : (
         <>
-          {cartItems.map((item) => (
-            <div
-              key={item.id}
-              className="flex justify-between items-center border-b py-2"
-            >
-              <div>
-                <h3>{item.name}</h3>
-                <p>₹{item.discountPrice}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  value={item.quantity}
-                  onChange={(e) =>
-                    dispatch(
-                      updateQuantity({
-                        productId: item.productId,
-                        quantity: Number(e.target.value),
-                      })
-                    )
-                  }
-                  min={1}
-                  className="w-16 text-center bg-slate-800 text-white"
-                />
-                <Button
-                  variant="destructive"
-                  onClick={() => dispatch(removeFromCart(item.id))}
-                >
-                  Remove
-                </Button>
-              </div>
-            </div>
-          ))}
+          <div className="space-y-4">
+            {cartItems.map((item) => (
 
-          <div className="text-right mt-4 font-semibold">
-            Total: ₹{totalAmount}
+              <Card className="h-44 p-2">
+                <div className="flex gap-4">
+                  <div className="w-38 h-38 overflow-hidden rounded-md">
+                    <img src={item.image} alt="Product Image" />
+                  </div>
+
+                  <div className="w-[60%]">
+                    <h3 className="font-bold lg:text-xl">{item.name}</h3>
+                    <p>{item.description}</p>
+                  </div>
+                  <div className="flex flex-col gap-3  w-[25%]">
+                    <div className="flex flex-col">
+                      <div>MRP:
+                        <span className=" text-muted-foreground">
+                          {` ${item.MRP} /-`}
+                        </span>
+                      </div>
+                      <div>Discount:
+                        <span className="text-muted-foreground">
+                          {` ${item.discount} %`}
+                        </span>
+                      </div>
+                      <div className="flex items-baseline space-x-1.5"> Price:
+                        <span className="text-sm md:text-lg font-semibold">
+                          {`${item.discountPrice}`}
+                        </span>
+                        <span className="text-md md:text-xs text-muted-foreground mr-2">
+                          /- Per {item.unit}
+                        </span>
+                      </div>
+                      <div>Amount:
+                        <span className="text-muted-foreground">
+                          {` ${item.discountPrice * item.quantity} /-`}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="space-x-3 flex items-center">
+                      <Button
+                        variant="destructive"
+                        onClick={() => dispatch(removeFromCart(item.id))}
+                      >
+                        Remove
+                      </Button>
+                      <div className="flex flex-col gap-4">
+                        <ButtonGroup>
+                          <Button
+                            onClick={() => dispatch(updateQuantity({ productId: item.id, quantity: Math.max(1, item.quantity - 1) }))}
+                            variant="outline"
+                          >
+                            <Minus />
+                          </Button>
+                          <Input
+                            type="text"
+                            value={item.quantity}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (/^\d{0,6}$/.test(value)) {
+                                dispatch(updateQuantity({ productId: item.id, quantity: value === "" ? 0 : Number(value) }));
+                              }
+                            }}
+                            className="w-20 bg-background text-center"
+                          />
+                          <Button onClick={() => dispatch(updateQuantity({ productId: item.id, quantity: item.quantity + 1 }))} variant="outline">
+                            <Plus />
+                          </Button>
+                        </ButtonGroup>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
           </div>
 
-          <Button className="w-full mt-4" onClick={handleCheckout}>
+          <div className="text-right mt-4 font-semibold">
+            Total Amount: {totalAmount} /-
+          </div>
+
+          <Button className="w-full mt-4" onClick={() => handleCheckout(user._id, cartItems, totalAmount)}>
             Proceed to Checkout
           </Button>
         </>
@@ -92,3 +143,4 @@ export default function CartPage() {
     </div>
   );
 };
+
