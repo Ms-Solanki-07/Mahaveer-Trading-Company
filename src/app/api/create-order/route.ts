@@ -126,8 +126,7 @@ export async function POST(req: Request) {
 
     console.log("User Details:", user);
     console.log("Shop Details:", shop); 
-    console.log("Order Items:", items);
-    console.log("Order Created:", orderDetails);
+    console.log("Order Items:", items); 
 
 
     const invoicePath = await generateInvoicePDF({
