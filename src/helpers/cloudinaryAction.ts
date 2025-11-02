@@ -26,6 +26,22 @@ export async function uploadOnCloudinary(file: File) {
   });
 }
 
+// upload from local path
+export async function uploadFromPathOnCloudinary(filePath: string) {
+  if (!filePath) return null;
+
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload(
+      filePath,
+      { resource_type: "auto" },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+}
+
 // Delete file by publicId
 export async function deleteFromCloudinary(
   publicId: string,

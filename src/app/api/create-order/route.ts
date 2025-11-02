@@ -3,13 +3,14 @@ import UserModel from "@/models/User.model";
 import ShopModel from "@/models/Shop.model";
 import OrderModel from "@/models/Order.model";
 import OrderItemModel from "@/models/OrderItem.model";
-import { generateInvoicePDF } from "@/lib/generateInvoicePDF"; 
-import mongoose from "mongoose";
+import { generateInvoicePDF } from "@/helpers/generateInvoicePDF";
+import mongoose from "mongoose"; 
+import { uploadFromPathOnCloudinary } from "@/helpers/cloudinaryAction";
 
 export async function POST(req: Request) {
   try {
     await connectDB();
-    const { userId, orderItems, totalAmount } = await req.json(); 
+    const { userId, orderItems, totalAmount } = await req.json();
 
     if (!userId) {
       return Response.json({
@@ -26,15 +27,15 @@ export async function POST(req: Request) {
     }
 
     const user = await UserModel.aggregate([
-      { $match: { _id: new mongoose.Types.ObjectId(userId) } }, 
+      { $match: { _id: new mongoose.Types.ObjectId(userId) } },
       {
-        $project: { 
+        $project: {
           _id: 0,
           fullname: 1,
           email: 1,
           phone: 1,
           role: 1,
-          isVerified: 1,  
+          isVerified: 1,
           shopId: 1,
         }
       }
@@ -76,16 +77,11 @@ export async function POST(req: Request) {
       orderDate: new Date(),
     });
 
-    if(!order) {
+    if (!order) {
       return Response.json({
         success: false,
         message: "Failed to create order"
       }, { status: 500 })
-    }
-
-    const orderDetails = {
-      totalAmount: order.totalAmount,
-      orderDate: order.orderDate,
     } 
 
     // Create all order items
@@ -122,12 +118,7 @@ export async function POST(req: Request) {
           }
         }
       }
-    ]);
-
-    console.log("User Details:", user);
-    console.log("Shop Details:", shop); 
-    console.log("Order Items:", items); 
-
+    ]); 
 
     const invoicePath = await generateInvoicePDF({
       user: user[0],
@@ -138,9 +129,22 @@ export async function POST(req: Request) {
       orderId: order._id as string,
     });
 
+    const result: any = await uploadFromPathOnCloudinary(invoicePath);
+
+    if (!result) {
+      return Response.json({
+        success: false,
+        message: "failed to upload invoice to cloud"
+      }, { status: 400 })
+    }
+
+    order.invoiceUrl = result.secure_url;
+    order.invoicePublicId = result.public_id;
+    await order.save();
+
     return Response.json({
       success: true,
-      message: "Order placed successfully", 
+      message: "Order placed successfully",
       invoicePath: invoicePath,
     });
 
