@@ -1,10 +1,10 @@
 'use client'
 
-import { removeFromCart, updateQuantity, clearCart, CartItem } from "@/lib/store/features/cartSlice";
+import { removeFromCart, updateQuantity, CartItem } from "@/lib/store/features/cartSlice";
 import { Button } from "@/components/ui/button";
 import { useAppSelector, useAppDispatch } from '@/lib/store/hooks';
 import { Card } from "@/components/ui/card";
-import { Minus, Plus } from "lucide-react";
+import { Loader2, Minus, Plus } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Input } from "@/components/ui/input";
 import axios, { AxiosError } from "axios";
@@ -12,8 +12,10 @@ import { useSession } from "next-auth/react";
 import { User } from "next-auth";
 import { ApiResponse } from "@/types/ApiResponse";
 import { toast } from "sonner";
+import { useState } from "react";
 
 export default function CartPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const cartItems = useAppSelector(state => state.cart.cart.items);
   const dispatch = useAppDispatch();
   const { data: session } = useSession()
@@ -24,10 +26,11 @@ export default function CartPage() {
     0
   );
 
-  const handleCheckout = async (userId: string, cartItems: CartItem[], totalAmount: number) => { 
+  const handleCheckout = async (userId: string, cartItems: CartItem[], totalAmount: number) => {
     try {
+      setIsSubmitting(true);
       const payload = {
-        userId, 
+        userId,
         orderItems: cartItems,
         totalAmount,
       };
@@ -36,14 +39,15 @@ export default function CartPage() {
         headers: { "Content-Type": "application/json" },
       });
 
-      toast.success("Order placed successfully");
-      console.log("✅ Order placed successfully:", res);
-      
+      toast.success("Order placed successfully"); 
+
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>
       const errorMessage = axiosError.response?.data.message
       toast.error(errorMessage ? errorMessage : 'Server Error: Something went wrong while placing the order.')
-    } 
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -136,7 +140,14 @@ export default function CartPage() {
           </div>
 
           <Button className="w-full mt-4" onClick={() => handleCheckout(user._id, cartItems, totalAmount)}>
-            Proceed to Checkout
+            {
+              isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+                </>
+              ) : ('Proceed to Checkout')
+            }
           </Button>
         </>
       )}

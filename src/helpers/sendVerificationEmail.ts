@@ -1,4 +1,4 @@
-import nodemailer, { Transporter, SendMailOptions, SentMessageInfo } from 'nodemailer';
+import nodemailer, { Transporter, SentMessageInfo } from 'nodemailer';
 import VerificationEmail from '../../emails/VerificationEmail';
 import { ApiResponse } from '@/types/ApiResponse';
 import { render } from '@react-email/render' 
@@ -12,8 +12,8 @@ export async function sendVerificationEmail(
     const transporter: Transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
+            user: process.env.COMPANY_EMAIL_USER,
+            pass: process.env.COMPANY_EMAIL_PASS,
         }
     })
 
@@ -23,7 +23,7 @@ export async function sendVerificationEmail(
 
     //Email options
     const emailOptions = {
-        from: `"Mahaveer Trading Company" <${process.env.EMAIL_USER}>`,
+        from: `"Mahaveer Trading Company" <${process.env.COMPANY_EMAIL_USER}>`,
         to: email,
         subject: "Verification Code | Mahaveer Trading Company",
         html: htmlContent,

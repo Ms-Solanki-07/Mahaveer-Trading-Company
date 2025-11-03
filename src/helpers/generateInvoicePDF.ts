@@ -1,7 +1,6 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import path from "path";
-import fs from "fs";
-import { Order } from '@/models/Order.model';
+import fs from "fs"; 
 import { User } from '@/models/User.model';
 import { Shop } from '@/models/Shop.model';
 import { OrderItem } from '@/models/OrderItem.model';
@@ -74,11 +73,8 @@ export async function generateInvoicePDF({ user, shop, items, totalAmount, order
   
   page.drawText(`Invoice No: ${orderId}`, { x: 50, y: y - 130, font: fontRegular, size: 12 });
   page.drawText(`Invoice Date: ${new Date(orderDate).toLocaleDateString()}`, {
-    x: 50, y: y - 145, font: fontRegular, size: 12
-  });
-  // page.drawText(`Payment Mode: ${order.paymentMethod || "N/A"}`, {
-  //   x: 50, y: y - 160, font: fontRegular, size: 12
-  // });
+    x: 420, y: y - 130, font: fontRegular, size: 12
+  }); 
 
   // Customer Details Section
   let sectionY = y - 185;
@@ -92,7 +88,7 @@ export async function generateInvoicePDF({ user, shop, items, totalAmount, order
 
   // Shop Details Section
   sectionY -= 30;
-  page.drawText("Shop Details", { x: 50, y: sectionY, font: fontBold, size: 13 });
+  page.drawText("Customer Shop Details", { x: 50, y: sectionY, font: fontBold, size: 13 });
   sectionY -= 18;
   page.drawText(`Shop Name: ${shop.shopName}`, { x: 50, y: sectionY, font: fontRegular, size: 12 });
   sectionY -= 16;

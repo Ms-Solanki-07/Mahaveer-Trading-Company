@@ -4,8 +4,10 @@ import ShopModel from "@/models/Shop.model";
 import OrderModel from "@/models/Order.model";
 import OrderItemModel from "@/models/OrderItem.model";
 import { generateInvoicePDF } from "@/helpers/generateInvoicePDF";
-import mongoose from "mongoose"; 
+import mongoose from "mongoose";
 import { uploadFromPathOnCloudinary } from "@/helpers/cloudinaryAction";
+import { sendInvoiceEmail } from "@/helpers/sendInvoiceEmail";
+import path from "path";
 
 export async function POST(req: Request) {
   try {
@@ -31,7 +33,7 @@ export async function POST(req: Request) {
       {
         $project: {
           _id: 0,
-          fullname: 1,
+          fullName: 1,
           email: 1,
           phone: 1,
           role: 1,
@@ -82,7 +84,7 @@ export async function POST(req: Request) {
         success: false,
         message: "Failed to create order"
       }, { status: 500 })
-    } 
+    }
 
     // Create all order items
     const orderItemsData = orderItems.map((item: any) => ({
@@ -118,7 +120,7 @@ export async function POST(req: Request) {
           }
         }
       }
-    ]); 
+    ]);
 
     const invoicePath = await generateInvoicePDF({
       user: user[0],
@@ -141,6 +143,18 @@ export async function POST(req: Request) {
     order.invoiceUrl = result.secure_url;
     order.invoicePublicId = result.public_id;
     await order.save();
+
+    const orderId = order._id as string;
+    const invoiceNumber = orderId.toString();
+
+    await sendInvoiceEmail(
+      user[0].fullName,
+      user[0].email,
+      invoiceNumber,
+      order.orderDate.toDateString(),
+      order.totalAmount,
+      invoicePath
+    );
 
     return Response.json({
       success: true,
